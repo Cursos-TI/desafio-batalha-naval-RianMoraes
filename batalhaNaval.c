@@ -1,40 +1,110 @@
 #include <stdio.h>
 
+int podePosicionar(int tabuleiro[10][10], int linha, int coluna, int tamanho, char direcao)
+{
+    // validar limites básicos
+    if (linha < 0 || linha >= 10 || coluna < 0 || coluna >= 10)
+        return 0;
+
+    if (direcao == 'H')
+    {
+        if (coluna + tamanho > 10)
+            return 0;
+
+        for (int i = 0; i < tamanho; i++)
+        {
+            if (tabuleiro[linha][coluna + i] != 0)
+                return 0;
+        }
+    }
+    else if (direcao == 'V')
+    {
+        if (linha + tamanho > 10)
+            return 0;
+
+        for (int i = 0; i < tamanho; i++)
+        {
+            if (tabuleiro[linha + i][coluna] != 0)
+                return 0;
+        }
+    }
+    else
+        return 0;
+
+    return 1;
+}
+
 // Desafio Batalha Naval - MateCheck
-// Este código inicial serve como base para o desenvolvimento do sistema de Batalha Naval.
-// Siga os comentários para implementar cada parte do desafio.
 
-int main() {
+int main()
+{
     // Nível Novato - Posicionamento dos Navios
-    // Sugestão: Declare uma matriz bidimensional para representar o tabuleiro (Ex: int tabuleiro[5][5];).
-    // Sugestão: Posicione dois navios no tabuleiro, um verticalmente e outro horizontalmente.
-    // Sugestão: Utilize `printf` para exibir as coordenadas de cada parte dos navios.
 
-    // Nível Aventureiro - Expansão do Tabuleiro e Posicionamento Diagonal
-    // Sugestão: Expanda o tabuleiro para uma matriz 10x10.
-    // Sugestão: Posicione quatro navios no tabuleiro, incluindo dois na diagonal.
-    // Sugestão: Exiba o tabuleiro completo no console, mostrando 0 para posições vazias e 3 para posições ocupadas.
+    // declaração de variaveis
+    char linha[10] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
+    int coluna[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+    int tabuleiro[10][10] = {
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0}};
+    int navioUm[3] = {3, 3, 3};
+    int navioDois[3] = {3, 3, 3};
 
-    // Nível Mestre - Habilidades Especiais com Matrizes
-    // Sugestão: Crie matrizes para representar habilidades especiais como cone, cruz, e octaedro.
-    // Sugestão: Utilize estruturas de repetição aninhadas para preencher as áreas afetadas por essas habilidades no tabuleiro.
-    // Sugestão: Exiba o tabuleiro com as áreas afetadas, utilizando 0 para áreas não afetadas e 1 para áreas atingidas.
+    // validações
 
-    // Exemplos de exibição das habilidades:
-    // Exemplo para habilidade em cone:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 1 1 1 1 1
-    
-    // Exemplo para habilidade em octaedro:
-    // 0 0 1 0 0
-    // 0 1 1 1 0
-    // 0 0 1 0 0
+    // inserção dos navios
+    // navioUm
+    if (podePosicionar(tabuleiro, 0, 2, 3, 'H'))
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            tabuleiro[0][2 + i] = 3;
+        }
+    } 
+    else
+    {
+        printf("Não pode inserir navio aqui!\n");
+        return 0;
+    }
 
-    // Exemplo para habilidade em cruz:
-    // 0 0 1 0 0
-    // 1 1 1 1 1
-    // 0 0 1 0 0
+// navioDois
+    if (podePosicionar(tabuleiro, 7, 4, 3, 'V'))
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            tabuleiro[6 + i][4] = 3;
+        }
+    } 
+    else
+    {
+        printf("Não pode inserir navio aqui!\n");
+        return 0;
+    }
+
+    // exibição  no console
+    printf("    ");
+    for (char k = 0; k < 10; k++)
+    {
+        printf("%c ", linha[k]);
+    }
+    printf("\n");
+
+    for (int forColuna = 0; forColuna < 10; forColuna++)
+    {
+        printf("%d | ", coluna[forColuna]);
+        for (int forLinha = 0; forLinha < 10; forLinha++)
+        {
+            printf("%d ", tabuleiro[forColuna][forLinha]);
+        }
+        printf("\n");
+    }
 
     return 0;
 }
