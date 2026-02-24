@@ -1,134 +1,114 @@
 #include <stdio.h>
-
+#include <stdlib.h>
 #define Linhas 10
 #define Colunas 10
+#define TAM_HAB 5 // tamanho fixo das habilidades 5x5
 
-// Desafio Batalha Naval - MateCheck
-
-int podePosicionar(int tabuleiro[Linhas][Colunas], int linha, int coluna, int tamanho, char direcao) // valida se pode posicionar no tabuleiro
+// ================= FUNÇÃO PARA SOBREPOR HABILIDADE =================
+void aplicarHabilidade(int tabuleiro[Linhas][Colunas],
+                       int habilidade[TAM_HAB][TAM_HAB],
+                       int origemLinha,
+                       int origemColuna)
 {
-    // validar limites básicos
-    if (linha < 0 || linha >= Linhas || coluna < 0 || coluna >= Colunas)
-        return 0;
-    // condicional para validação limite horizontal
-    if (direcao == 'H')
-    {
-        if (coluna + tamanho > Colunas)
-            return 0;
+    int offset = TAM_HAB / 2;
 
-        for (int i = 0; i < tamanho; i++)
+    for (int i = 0; i < TAM_HAB; i++)
+    {
+        for (int j = 0; j < TAM_HAB; j++)
         {
-            if (tabuleiro[linha][coluna + i] != 0)
-                return 0;
+            if (habilidade[i][j] == 1)
+            {
+                int linhaTab = origemLinha + (i - offset);
+                int colunaTab = origemColuna + (j - offset);
+
+                // valida limite do tabuleiro
+                if (linhaTab >= 0 && linhaTab < Linhas &&
+                    colunaTab >= 0 && colunaTab < Colunas)
+                {
+                    if (tabuleiro[linhaTab][colunaTab] == 0)
+                        tabuleiro[linhaTab][colunaTab] = 5;
+                }
+            }
         }
     }
-    // condicional para validação limite horizontal
-    else if (direcao == 'V')
-    {
-        if (linha + tamanho > Linhas)
-            return 0;
-
-        for (int i = 0; i < tamanho; i++)
-        {
-            if (tabuleiro[linha + i][coluna] != 0)
-                return 0;
-        }
-    }
-    // condicional para validação limite Diagonal
-    else if (direcao == 'D')
-    {
-        if (linha + tamanho > Linhas || coluna + tamanho > Colunas)
-            return 0;
-
-        for (int i = 0; i < tamanho; i++)
-        {
-            if (tabuleiro[linha + i][coluna + i] != 0)
-                return 0;
-        }
-    }
-    else
-        return 0;
-
-    return 1;
 }
 
+// ================= MAIN =================
 int main()
 {
-    // declaração de variaveis
-    char coluna[Colunas] = {'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'};
-    int linha[Linhas] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
     int tabuleiro[Linhas][Colunas] = {0};
-    int navioUm[3] = {3, 3, 3};
-    int navioDois[3] = {3, 3, 3};
 
-    // posiciona navio1
-    if (podePosicionar(tabuleiro, 0, 2, 3, 'H'))
+    // ================= POSICIONANDO NAVIOS =================
+    for (int i = 0; i < 3; i++)
+        tabuleiro[0][2 + i] = 3;
+
+    for (int i = 0; i < 3; i++)
+        tabuleiro[7 + i][4] = 3;
+
+    for (int i = 0; i < 3; i++)
+        tabuleiro[i][i] = 3;
+
+    for (int i = 0; i < 3; i++)
+        tabuleiro[5 + i][7 - i] = 3;
+
+    // ================= MATRIZES DE HABILIDADE =================
+
+    int cone[TAM_HAB][TAM_HAB] = {0};
+    int cruz[TAM_HAB][TAM_HAB] = {0};
+    int octaedro[TAM_HAB][TAM_HAB] = {0};
+
+    int centro = TAM_HAB / 2;
+
+    // -------- CONE (apontado para baixo) --------
+    for (int i = 0; i < TAM_HAB; i++)
     {
-        for (int i = 0; i < 3; i++)
+        for (int j = 0; j < TAM_HAB; j++)
         {
-            tabuleiro[0][2 + i] = 3;
+            if (j >= centro - i && j <= centro + i)
+                cone[i][j] = 1;
         }
     }
-    else
+
+    // -------- CRUZ --------
+    for (int i = 0; i < TAM_HAB; i++)
     {
-        printf("Não pode inserir navio aqui!\n");
-        return 0;
-    }
-    // posiciona navio2
-    if (podePosicionar(tabuleiro, 7, 4, 3, 'V'))
-    {
-        for (int i = 0; i < 3; i++)
+        for (int j = 0; j < TAM_HAB; j++)
         {
-            tabuleiro[7 + i][4] = 3;
+            if (i == centro || j == centro)
+                cruz[i][j] = 1;
         }
     }
-    else
-    {
-        printf("Não pode inserir navio aqui!\n");
-        return 0;
-    }
 
-    // posiciona navio3
-    if (podePosicionar(tabuleiro, 0, 0, 3, 'D'))
+    // -------- OCTAEDRO (losango) --------
+    for (int i = 0; i < TAM_HAB; i++)
     {
-        for (int i = 0; i < 3; i++)
+        for (int j = 0; j < TAM_HAB; j++)
         {
-            tabuleiro[i + 0][0 + i] = 3;
+            if (abs(i - centro) + abs(j - centro) <= centro)
+                octaedro[i][j] = 1;
         }
     }
-    else
-    {
-        printf("Não pode inserir navio aqui!\n");
-        return 0;
-    }
-    // posiciona navio4
-    if (podePosicionar(tabuleiro, 5, 7, 3, 'D'))
-    {
-        for (int i = 0; i < 3; i++)
-        {
-            tabuleiro[i + 5][7 - i] = 3;
-        }
-    }
-    else
-    {
-        printf("Não pode inserir navio aqui!\n");
-        return 0;
-    }
 
-    // exibição
-    printf("    ");                   // alinhamento
-    for (int i = 0; i < Colunas; i++) // exibe as colunas de A a Z
-    {
-        printf("%c ", coluna[i]);
-    }
-    printf("\n");
+    // ================= APLICANDO HABILIDADES =================
+    aplicarHabilidade(tabuleiro, cone, 4, 4);
+    aplicarHabilidade(tabuleiro, cruz, 2, 7);
+    aplicarHabilidade(tabuleiro, octaedro, 7, 2);
 
-    for (int i = 0; i < Linhas; i++) // exibe o tabuleiro 10x10 + linhas 1 a 10
+    // ================= EXIBIÇÃO DO TABULEIRO =================
+    printf("    A B C D E F G H I J\n");
+
+    for (int i = 0; i < Linhas; i++)
     {
-        printf("%d | ", linha[i]);
+        printf("%d | ", i);
+
         for (int j = 0; j < Colunas; j++)
         {
-            printf("%d ", tabuleiro[i][j]);
+            if (tabuleiro[i][j] == 0)
+                printf("0 ");
+            else if (tabuleiro[i][j] == 3)
+                printf("3 ");
+            else if (tabuleiro[i][j] == 5)
+                printf("5 ");
         }
         printf("\n");
     }
